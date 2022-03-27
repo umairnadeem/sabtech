@@ -5,9 +5,10 @@
   "scripts": {
     "lint": "next lint",
     "test": "jest",
-    "dev": "cross-env NODE_ENV=development nodemon ./server/index.js --watch ./server/index.js",
+    "dev": "NODE_ENV=development ts-node ./src/server/index.ts",
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
-    "start": "cross-env NODE_ENV=production node ./server/index.js"
+    "serve": "npm run dev & npx localtunnel --port 8081 -s sabtech",
+    "start": "cross-env NODE_ENV=production ts-node ./src/server/index.ts"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,9 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-stage-3": "^7.0.0",
+    "@types/koa": "^2.13.4",
+    "@types/koa-router": "^7.4.4",
+    "@types/next": "^9.0.0",
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.6",
     "babel-jest": "26.6.3",
     "babel-register": "^6.26.0",
@@ -58,7 +62,8 @@
     "nodemon": "^2.0.7",
     "prettier": "2.2.1",
     "react-addons-test-utils": "15.6.2",
-    "react-test-renderer": "16.14.0"
+    "react-test-renderer": "16.14.0",
+    "ts-node": "^10.7.0"
   },
   "husky": {
     "hooks": {
