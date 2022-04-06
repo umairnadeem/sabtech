@@ -1,10 +1,13 @@
 import { gql } from "apollo-boost";
+import esc from "js-string-escape";
 
-export const GET_ORDERS = gql`
-  {
-    orders(first: 11) {
+export const getOrders = (query: string) => gql`
+  query {
+    orders(first: 1000000, query: ${query ? `"${esc(query)}"` : null}) {
       edges {
         node {
+          id,
+          createdAt,
           totalPriceSet {
             shopMoney {
               amount
@@ -25,12 +28,14 @@ export const GET_ORDERS = gql`
               amount
             }
           }
-          lineItems(first: 10) {
+          lineItems(first: 100) {
             edges {
               node {
                 variant {
                   inventoryItem {
-                    id
+                    unitCost {
+                      amount
+                    }
                   }
                 }
                 currentQuantity
