@@ -6,6 +6,9 @@ import Shopify, { ApiVersion } from "@shopify/shopify-api";
 import Koa from "koa";
 import next from "next";
 import Router from "koa-router";
+import cors from "koa-cors";
+import fs from "fs";
+import Excel from "exceljs";
 
 dotenv.config();
 const port = parseInt(process.env.PORT ?? "", 10) || 8081;
@@ -92,6 +95,17 @@ app.prepare().then(async () => {
       await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
     }
   );
+  router.get("/xls", async (ctx, next) => {
+    const file = __dirname + "/static/Reports.xlsx";
+    const workbook = await new Excel.Workbook().xlsx.readFile(file);
+    ctx.body = await workbook.xlsx.writeBuffer();
+    ctx.attachment(file);
+    ctx.set(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    ctx.set("Content-disposition", "attachment; filename=" + "Report.xlsx");
+  });
 
   router.get("(/_next/static/.*)", handleRequest); // Static content is clear
   router.get("/_next/webpack-hmr", handleRequest); // Webpack content is clear
@@ -106,6 +120,7 @@ app.prepare().then(async () => {
     }
   });
 
+  server.use(cors({ origin: "*" }));
   server.use(router.allowedMethods());
   server.use(router.routes());
   server.listen(port, () => {
