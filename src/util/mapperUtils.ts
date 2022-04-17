@@ -1,7 +1,7 @@
 import { LineItem } from "../models/LineItem";
 import { Order } from "../models/Order";
 import { keyBy } from "lodash";
-import { isAfter, subMonths, format, startOfMonth } from "date-fns";
+import { isAfter, subMonths, startOfMonth } from "date-fns";
 import { sumObjectsByKey } from "./mathUtils";
 
 export type MappedOrder = Order & {

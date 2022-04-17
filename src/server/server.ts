@@ -7,8 +7,10 @@ import Koa from "koa";
 import next from "next";
 import Router from "koa-router";
 import cors from "koa-cors";
-import fs from "fs";
+import { nextChar } from "../util/sheetUtils";
 import Excel from "exceljs";
+import { OrderFinancials } from "../util/mapperUtils";
+import { format } from "date-fns";
 
 dotenv.config();
 const port = parseInt(process.env.PORT ?? "", 10) || 8081;
@@ -96,8 +98,26 @@ app.prepare().then(async () => {
     }
   );
   router.get("/xls", async (ctx, next) => {
+    const data = String(ctx.query.data);
+    const parsedData: Record<string, OrderFinancials> = JSON.parse(atob(data));
     const file = __dirname + "/static/Reports.xlsx";
     const workbook = await new Excel.Workbook().xlsx.readFile(file);
+    const worksheet = workbook.getWorksheet(1);
+    const dataList = Object.entries(parsedData).reverse();
+    let currLetter = "E";
+    for (let i = 0; i < dataList.length; i++) {
+      worksheet.getCell(`${currLetter}2`).value = `${format(
+        new Date(dataList[i][0]),
+        "LLL"
+      )}-${format(new Date(dataList[i][0]), "yyyy")}`;
+      worksheet.getCell(`${currLetter}3`).value = dataList[i][1].grossRevenue;
+      worksheet.getCell(`${currLetter}4`).value =
+        dataList[i][1].shippingRevenue;
+      worksheet.getCell(`${currLetter}5`).value = -1 * dataList[i][1].discounts;
+      worksheet.getCell(`${currLetter}6`).value = -1 * dataList[i][1].returns;
+      currLetter = nextChar(currLetter);
+    }
+    console.log(dataList);
     ctx.body = await workbook.xlsx.writeBuffer();
     ctx.attachment(file);
     ctx.set(

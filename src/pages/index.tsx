@@ -12,11 +12,15 @@ import {
 } from "../util/mapperUtils";
 import { flow } from "lodash/fp";
 import { useEffect, useState } from "react";
-import axios from "axios";
+
 const today = new Date();
 const params = {
   to: today,
-  from: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+  from: new Date(
+    today.getFullYear() - 1,
+    today.getMonth() + 1,
+    today.getDate()
+  ),
 };
 
 function download(dataurl, filename) {
@@ -39,11 +43,9 @@ export default function Index() {
         TimeInterval.MONTH,
         params
       );
-      axios
-        .get("/xls", postData)
-        .then((data) => console.log(data))
-        .catch((err) => console.error(err));
-      download("/xls", "reports.xlsx");
+      console.log("postData", postData);
+      btoa("");
+      download(`/xls?data=${btoa(JSON.stringify(postData))}`, "reports.xlsx");
     }
   }, [data]);
 
