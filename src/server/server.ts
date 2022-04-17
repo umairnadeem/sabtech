@@ -115,6 +115,7 @@ app.prepare().then(async () => {
         dataList[i][1].shippingRevenue;
       worksheet.getCell(`${currLetter}5`).value = -1 * dataList[i][1].discounts;
       worksheet.getCell(`${currLetter}6`).value = -1 * dataList[i][1].returns;
+      worksheet.getCell(`${currLetter}12`).value = dataList[i][1].cogs;
       currLetter = nextChar(currLetter);
     }
     console.log(dataList);
