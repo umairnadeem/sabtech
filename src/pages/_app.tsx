@@ -63,11 +63,13 @@ class MyApp extends App {
     }
   }
   render() {
+    //@ts-ignore
     const { Component, pageProps, host } = this.props;
     return (
       <AppProvider i18n={translations}>
         <Provider
           config={{
+            //@ts-ignore
             apiKey: API_KEY,
             host: host,
             forceRedirect: true,
@@ -80,6 +82,7 @@ class MyApp extends App {
   }
 }
 
+//@ts-ignore
 MyApp.getInitialProps = async ({ ctx }) => {
   return {
     host: ctx.query.host,

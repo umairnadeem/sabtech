@@ -8,7 +8,7 @@
     "dev": "NODE_ENV=development ts-node ./src/server/index.ts",
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
     "serve": "npm run dev & npx localtunnel --port 8081 -s sabtech",
-    "start": "cross-env NODE_ENV=production ts-node ./src/server/index.ts"
+    "start": "npm run build && cross-env NODE_ENV=production ts-node ./src/server/index.ts"
   },
   "repository": {
     "type": "git",
