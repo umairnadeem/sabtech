@@ -35,6 +35,7 @@ export const useBulkQuery = <T>(
   });
   const [jsonData, setJsonData] = useState(undefined);
   const extractJson = async (data) => {
+    console.log("got data to poll", data);
     const extractedData = await jsonlToJson(data?.node?.url);
     setJsonData(extractedData);
     console.log("got poll data", extractedData);
