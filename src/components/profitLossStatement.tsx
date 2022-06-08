@@ -70,7 +70,7 @@ export default function ProfitLossStatement(props) {
       onClose={props.handleClose}
       title={props.selected.label}
       primaryAction={{ content: "Download", onAction: primaryFooterAction }}
-      secondaryActions={[{ content: "Share" }]}
+      // secondaryActions={[{ content: "Share" }]}
     >
       <Modal.Section>
         <DataTable
