@@ -64,19 +64,8 @@ export default function Index() {
         items={[
           {
             url: "/",
-            label: "Home",
+            label: "Reports",
             icon: HomeMinor,
-          },
-          {
-            url: "/path/to/place",
-            label: "Orders",
-            icon: OrdersMinor,
-            badge: "15",
-          },
-          {
-            url: "/path/to/place",
-            label: "Products",
-            icon: ProductsMinor,
           },
         ]}
       />
