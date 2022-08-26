@@ -1,28 +1,6 @@
-import {
-  Page,
-  Card,
-  Select,
-  Frame,
-  Navigation,
-  Modal,
-  TextContainer,
-  Button,
-  DataTable,
-} from "@shopify/polaris";
-import { HomeMinor, OrdersMinor, ProductsMinor } from "@shopify/polaris-icons";
-import { useQuery } from "react-apollo";
-import { useBulkQuery } from "../hooks/useBulkQuery";
-import { LineItem } from "../models/LineItem";
-import { Order } from "../models/Order";
-import { getOrders } from "../queries/getOrders";
-import {
-  groupOrderFinancials,
-  mapOrderData,
-  sumOrderFinancials,
-  TimeInterval,
-} from "../util/mapperUtils";
-import { flow } from "lodash/fp";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { Page, Card, Select, Frame, Navigation } from "@shopify/polaris";
+import { HomeMinor } from "@shopify/polaris-icons";
+import { useState, useCallback } from "react";
 import ProfitLossStatement from "../components/profitLossStatement";
 
 export default function Index() {

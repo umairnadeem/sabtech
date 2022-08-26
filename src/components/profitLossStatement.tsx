@@ -11,17 +11,15 @@ import {
   sumOrderFinancials,
   TimeInterval,
 } from "../util/mapperUtils";
-import { Card, DataTable, Modal } from "@shopify/polaris";
+import { DataTable, Modal } from "@shopify/polaris";
 import { sumObjectsByKey } from "../util/mathUtils";
 
 const today = new Date();
 const params = {
-  to: today,
-  from: new Date(
-    today.getFullYear() - 1,
-    today.getMonth() + 1,
-    today.getDate()
-  ),
+  to: process.env.date_to ? new Date(process.env.date_to) : today,
+  from: process.env.date_from
+    ? new Date(process.env.date_from)
+    : new Date(today.getFullYear() - 1, today.getMonth() + 1, today.getDate()),
 };
 
 function download(dataurl, filename) {
