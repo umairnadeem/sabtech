@@ -16,10 +16,10 @@ import { sumObjectsByKey } from "../util/mathUtils";
 
 const today = new Date();
 const params = {
-  to: process.env.date_to ? new Date(process.env.date_to) : today,
-  from: process.env.date_from
-    ? new Date(process.env.date_from)
-    : new Date(today.getFullYear() - 1, today.getMonth() + 1, today.getDate()),
+  to: new Date("2021-10-31T23:59:59.999Z") || today,
+  from:
+    new Date("2021-10-01T00:00:00.000Z") ||
+    new Date(today.getFullYear() - 1, today.getMonth() + 1, today.getDate()),
 };
 
 function download(dataurl, filename) {
