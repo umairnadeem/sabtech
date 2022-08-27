@@ -1,8 +1,11 @@
 import { LineItem } from "../models/LineItem";
 import { Order } from "../models/Order";
 import { keyBy } from "lodash";
-import { isAfter, subMonths, startOfMonth } from "date-fns";
 import { sumObjectsByKey } from "./mathUtils";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 export type MappedOrder = Order & {
   lineItems?: LineItem[];
@@ -26,6 +29,15 @@ export interface TimeRange {
   to: Date;
 }
 
+const startOfMonth = (date: string | Date): string =>
+  dayjs.utc(date).startOf("month").toISOString();
+
+const subMonths = (date: string | Date, n: number): Date =>
+  dayjs.utc(date).subtract(n, "months").toDate();
+
+const isAfter = (date: string | Date, dateToCompare: string | Date): boolean =>
+  dayjs.utc(date).isAfter(dayjs.utc(dateToCompare));
+
 export const mapOrderData = (
   orderData: (Order | LineItem)[]
 ): MappedOrder[] => {
@@ -47,6 +59,7 @@ export const mapOrderData = (
 export const sumOrderFinancials = (
   mappedOrders: MappedOrder[]
 ): OrderFinancials[] => {
+  console.log("mappedOrders", mappedOrders);
   return mappedOrders.map((order) => ({
     grossRevenue:
       Number(order.totalPriceSet?.shopMoney?.amount ?? 0) +
@@ -77,7 +90,7 @@ export const groupOrderFinancials = (
   if (interval == TimeInterval.MONTH) {
     let date = range.to;
     while (isAfter(date, range.from)) {
-      output[startOfMonth(date).toISOString()] = {
+      output[startOfMonth(date)] = {
         grossRevenue: 0,
         shippingRevenue: 0,
         discounts: 0,
@@ -87,7 +100,7 @@ export const groupOrderFinancials = (
       date = subMonths(date, 1);
     }
     orderFinancials.forEach((financial) => {
-      const financialDate = startOfMonth(financial.createdAt).toISOString();
+      const financialDate = startOfMonth(financial.createdAt);
       output[financialDate] = sumObjectsByKey(output[financialDate], financial);
     });
     return output;
