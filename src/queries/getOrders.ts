@@ -28,6 +28,11 @@ export const getOrders = (query: string) => gql`
               amount
             }
           }
+          totalRefundedShippingSet {
+            shopMoney {
+              amount
+            }
+          }
           lineItems(first: 100) {
             edges {
               node {

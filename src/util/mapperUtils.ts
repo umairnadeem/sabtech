@@ -63,12 +63,13 @@ export const sumOrderFinancials = (
   return mappedOrders.map((order) => ({
     grossRevenue:
       Number(order.totalPriceSet?.shopMoney?.amount ?? 0) +
-      Number(order.totalDiscountsSet?.shopMoney?.amount ?? 0),
+      Number(order.totalDiscountsSet?.shopMoney?.amount ?? 0) -
+      Number(order.totalShippingPriceSet?.shopMoney?.amount ?? 0),
     discounts: Number(order.totalDiscountsSet?.shopMoney?.amount ?? 0),
     returns: Number(order.totalRefundedSet?.shopMoney?.amount ?? 0),
-    shippingRevenue: Number(
-      order.totalShippingPriceSet?.shopMoney?.amount ?? 0
-    ),
+    shippingRevenue:
+      Number(order.totalShippingPriceSet?.shopMoney?.amount ?? 0) -
+      Number(order.totalRefundedShippingSet?.shopMoney?.amount ?? 0),
     cogs: (order.lineItems ?? []).reduce(
       (sum, lineItem) =>
         sum +

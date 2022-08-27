@@ -21,4 +21,9 @@ export interface Order {
       amount: string;
     };
   };
+  totalRefundedShippingSet: {
+    shopMoney?: {
+      amount: string;
+    };
+  };
 }
