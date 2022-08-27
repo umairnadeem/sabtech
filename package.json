@@ -94,5 +94,6 @@
       "prettier --write"
     ]
   },
-  "heroku-run-build-script": true
+  "heroku-run-build-script": true,
+  "cacheDirectories": [".next/cache"]
 }
