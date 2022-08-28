@@ -14,6 +14,9 @@ import {
 import { DataTable, Modal } from "@shopify/polaris";
 import { sumObjectsByKey } from "../util/mathUtils";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 // const today = new Date();
 // const params = {
@@ -38,7 +41,7 @@ export default function ProfitLossStatement(props) {
   console.log(params.from.toISOString(), params.to.toISOString());
   const { error, data } = useBulkQuery<(Order | LineItem)[]>(
     getOrders(
-      `created_at:>=${params.from.toISOString()} AND created_at:<=${dayjs(params.to).add(1, "day").toISOString()}`
+      `created_at:>=${params.from.toISOString()} AND created_at:<=${dayjs.utc(params.to).add(1, "day").toISOString()}`
     )
   );
   const [rows, setRows] = useState([]);
