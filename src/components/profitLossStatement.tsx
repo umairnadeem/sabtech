@@ -37,7 +37,7 @@ export default function ProfitLossStatement(props) {
   console.log(params.from.toISOString(), params.to.toISOString());
   const { error, data } = useBulkQuery<(Order | LineItem)[]>(
     getOrders(
-      `created_at:>=${params.from.toISOString()} AND created_at:<=${params.to.toISOString()}`
+      `created_at:>=${params.from.toISOString()} AND created_at:<=${dayjs(params.to).add(1, "day").toISOString()}`
     )
   );
   const [rows, setRows] = useState([]);
