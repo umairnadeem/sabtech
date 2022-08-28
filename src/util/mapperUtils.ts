@@ -30,13 +30,13 @@ export interface TimeRange {
 }
 
 const startOfMonth = (date: string | Date): string =>
-  dayjs.utc(date).startOf("month").toISOString();
+  dayjs(date).local().startOf("month").format();
 
 const subMonths = (date: string | Date, n: number): Date =>
-  dayjs.utc(date).subtract(n, "months").toDate();
+  dayjs(date).local().subtract(n, "months").toDate();
 
 const isAfter = (date: string | Date, dateToCompare: string | Date): boolean =>
-  dayjs.utc(date).isAfter(dayjs.utc(dateToCompare));
+  dayjs(date).local().isAfter(dayjs(dateToCompare));
 
 export const mapOrderData = (
   orderData: (Order | LineItem)[]

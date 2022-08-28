@@ -1,5 +1,5 @@
 import { flow } from "lodash";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useBulkQuery } from "../hooks/useBulkQuery";
 import { LineItem } from "../models/LineItem";
 import { Order } from "../models/Order";
@@ -14,13 +14,13 @@ import {
 import { DataTable, Modal } from "@shopify/polaris";
 import { sumObjectsByKey } from "../util/mathUtils";
 
-const today = new Date();
-const params = {
-  to: new Date("2021-11-01T00:00:00.000Z") || today,
-  from:
-    new Date("2021-10-01T00:00:00.000Z") ||
-    new Date(today.getFullYear() - 1, today.getMonth() + 1, today.getDate()),
-};
+// const today = new Date();
+// const params = {
+//   to: new Date("2021-11-01T00:00:00.000Z") || today,
+//   from:
+//     new Date("2021-10-01T00:00:00.000Z") ||
+//     new Date(today.getFullYear() - 1, today.getMonth() + 1, today.getDate()),
+// };
 
 function download(dataurl, filename) {
   const link = document.createElement("a");
@@ -30,6 +30,11 @@ function download(dataurl, filename) {
 }
 
 export default function ProfitLossStatement(props) {
+  const params = {
+    from: props.start,
+    to: props.end,
+  };
+  console.log(params.from.toISOString(), params.to.toISOString());
   const { error, data } = useBulkQuery<(Order | LineItem)[]>(
     getOrders(
       `created_at:>=${params.from.toISOString()} AND created_at:<=${params.to.toISOString()}`
