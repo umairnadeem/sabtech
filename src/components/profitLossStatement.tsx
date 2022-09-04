@@ -15,6 +15,7 @@ import { DataTable, Modal } from "@shopify/polaris";
 import { sumObjectsByKey } from "../util/mathUtils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import axios from "axios";
 
 dayjs.extend(utc);
 
@@ -41,7 +42,10 @@ export default function ProfitLossStatement(props) {
   console.log(params.from.toISOString(), params.to.toISOString());
   const { error, data } = useBulkQuery<(Order | LineItem)[]>(
     getOrders(
-      `created_at:>=${params.from.toISOString()} AND created_at:<=${dayjs.utc(params.to).add(1, "day").toISOString()}`
+      `created_at:>=${params.from.toISOString()} AND created_at:<=${dayjs
+        .utc(params.to)
+        .add(1, "day")
+        .toISOString()}`
     )
   );
   const [rows, setRows] = useState([]);
@@ -66,6 +70,7 @@ export default function ProfitLossStatement(props) {
       setPrimaryFooterAction(() => () =>
         download(`/xls?data=${btoa(JSON.stringify(postData))}`, "reports.xlsx")
       );
+      axios.post("/rest");
     }
   }, [data]);
   return (

@@ -55,7 +55,7 @@ app.prepare().then(async () => {
         const { shop, accessToken, scope } = ctx.state.shopify;
         const host = ctx.query.host;
         ACTIVE_SHOPIFY_SHOPS[shop] = scope;
-
+        console.log({ accessToken });
         const responses = await Shopify.Webhooks.Registry.register({
           shop,
           accessToken,
@@ -99,6 +99,28 @@ app.prepare().then(async () => {
       await Shopify.Utils.graphqlProxy(ctx.req, ctx.res);
     }
   );
+
+  router.post(
+    "/rest",
+    // verifyRequest({ returnHeader: true }),
+    async (ctx, next) => {
+      const session = await Shopify.Utils.loadCurrentSession(ctx.req, ctx.res);
+      // Create a new client for the specified shop.
+      const client = new Shopify.Clients.Rest(
+        session.shop,
+        session.accessToken
+      );
+      // Use `client.get` to request the specified Shopify REST API endpoint, in this case `products`.
+      const response = await client.get({
+        path: "products",
+      });
+
+      ctx.body = { t: session.accessToken };
+      ctx.status = 201;
+      ctx.respond = true;
+    }
+  );
+
   router.get("/xls", async (ctx, next) => {
     const data = String(ctx.query.data);
     const parsedData: Record<string, OrderFinancials> = JSON.parse(atob(data));

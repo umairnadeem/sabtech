@@ -9,16 +9,26 @@ import {
   FormLayout,
 } from "@shopify/polaris";
 import { HomeMinor } from "@shopify/polaris-icons";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import ProfitLossStatement from "../components/profitLossStatement";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { useAppBridge } from "@shopify/app-bridge-react";
+import { authenticatedFetch } from "@shopify/app-bridge-utils";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 export default function Index() {
+  const app = useAppBridge();
+  const fetch = authenticatedFetch(app);
+  useEffect(() => {
+    (async () => {
+      const res = await fetch("/rest", { method: "POST" });
+      console.log("res", await res.json());
+    })();
+  });
   const options = [
     {
       label: "Profit & Loss statement",
@@ -101,8 +111,7 @@ export default function Index() {
                     "YYYY-MM-DD"
                   )}T00:00:00.000Z`
                 )
-              )
-                .toDate()}
+              ).toDate()}
             />
           );
         default:
