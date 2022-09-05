@@ -7,7 +7,7 @@
     "test": "jest",
     "dev": "NODE_ENV=development ts-node ./src/server/index.ts",
     "build": "NEXT_TELEMETRY_DISABLED=1 next build",
-    "serve": "npm run dev & npx localtunnel --port 8081 -s sabtech",
+    "serve": "npm run dev & npx localtunnel --port 8081 -s sabtech1",
     "start": "ts-node ./src/server/index.ts"
   },
   "repository": {

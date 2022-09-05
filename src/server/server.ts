@@ -11,6 +11,7 @@ import { nextChar } from "../util/sheetUtils";
 import Excel from "exceljs";
 import { OrderFinancials } from "../util/mapperUtils";
 import { format } from "date-fns";
+import dayjs from "dayjs";
 
 dotenv.config();
 const port = parseInt(process.env.PORT ?? "", 10) || 8081;
@@ -27,7 +28,7 @@ Shopify.Context.initialize({
   HOST_NAME: dev
     ? process.env.DEV_HOST?.replace(/https:\/\/|\/$/g, "") ?? ""
     : process.env.PROD_HOST?.replace(/https:\/\/|\/$/g, "") ?? "",
-  API_VERSION: ApiVersion.October20,
+  API_VERSION: ApiVersion.Unstable,
   IS_EMBEDDED_APP: true,
   // This should be replaced with your preferred storage strategy
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
@@ -127,7 +128,11 @@ app.prepare().then(async () => {
     const file = __dirname + "/static/Reports.xlsx";
     const workbook = await new Excel.Workbook().xlsx.readFile(file);
     const worksheet = workbook.getWorksheet(1);
-    const dataList = Object.entries(parsedData).reverse();
+    const dataList = Object.entries(parsedData).sort(
+      (a, b) =>
+        dayjs(a[0], "MMM YYYY").toDate().getTime() -
+        dayjs(b[0], "MMM YYYY").toDate().getTime()
+    );
     let currLetter = "E";
     for (let i = 0; i < dataList.length; i++) {
       worksheet.getCell(`${currLetter}2`).value = `${format(

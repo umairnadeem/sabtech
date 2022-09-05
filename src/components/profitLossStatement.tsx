@@ -7,8 +7,10 @@ import { getOrders } from "../queries/getOrders";
 import {
   groupOrderFinancials,
   mapOrderData,
+  mapProfitLossStatement,
   OrderFinancials,
   sumOrderFinancials,
+  sumProfitLossStatement,
   TimeInterval,
 } from "../util/mapperUtils";
 import { DataTable, Modal } from "@shopify/polaris";
@@ -16,6 +18,10 @@ import { sumObjectsByKey } from "../util/mathUtils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import axios from "axios";
+import { useAppBridge } from "@shopify/app-bridge-react/useAppBridge";
+import { authenticatedFetch } from "@shopify/app-bridge-utils";
+import { useQuery } from "react-apollo";
+import { getProfitLossStatement } from "../queries/getProfitLossStatement";
 
 dayjs.extend(utc);
 
@@ -35,31 +41,19 @@ function download(dataurl, filename) {
 }
 
 export default function ProfitLossStatement(props) {
-  const params = {
-    from: props.start,
-    to: props.end,
-  };
-  console.log(params.from.toISOString(), params.to.toISOString());
-  const { error, data } = useBulkQuery<(Order | LineItem)[]>(
-    getOrders(
-      `created_at:>=${params.from.toISOString()} AND created_at:<=${dayjs
-        .utc(params.to)
-        .add(1, "day")
-        .toISOString()}`
-    )
+  const { loading, error, data } = useQuery(
+    getProfitLossStatement(props.start, props.end)
   );
+
   const [rows, setRows] = useState([]);
   const [primaryFooterAction, setPrimaryFooterAction] = useState(null);
   useEffect(() => {
     if (data) {
-      const postData = groupOrderFinancials(
-        flow(mapOrderData, sumOrderFinancials)(data),
-        TimeInterval.MONTH,
-        params
-      );
-      const summedPostData: OrderFinancials = sumObjectsByKey(
-        ...Object.values(postData)
-      );
+      console.log(data);
+      const mappedData = mapProfitLossStatement(data, props.start, props.end);
+      console.log(mappedData);
+      const summedPostData = sumProfitLossStatement(mappedData);
+      console.log(summedPostData);
       setRows([
         ["Gross Revenue", summedPostData?.grossRevenue],
         ["Shipping Revenue", summedPostData?.shippingRevenue],
@@ -68,9 +62,11 @@ export default function ProfitLossStatement(props) {
         ["Cost of goods sold", summedPostData?.cogs],
       ]);
       setPrimaryFooterAction(() => () =>
-        download(`/xls?data=${btoa(JSON.stringify(postData))}`, "reports.xlsx")
+        download(
+          `/xls?data=${btoa(JSON.stringify(mappedData))}`,
+          "reports.xlsx"
+        )
       );
-      axios.post("/rest");
     }
   }, [data]);
   return (

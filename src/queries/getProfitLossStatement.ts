@@ -1,16 +1,18 @@
 import { gql } from "apollo-boost";
-import esc from "js-string-escape";
 
-export const getProfitLossStatement = (query: string) => gql`
+export const getProfitLossStatement = (from: Date, to: Date) => gql`
   query {
     shopifyqlQuery(
-      query: "FROM sales SHOW total_sales BY month SINCE -1y UNTIL today"
+      query: "FROM sales SHOW gross_sales, shipping, discounts, returns, net_sales, total_cost BY month SINCE ${
+        from.toISOString().split("T")[0]
+      } UNTIL ${to.toISOString().split("T")[0]}"
     ) {
       __typename
       ... on TableResponse {
         tableData {
           rowData
           columns {
+            # Elements in the columns section describe which column properties you want to return.
             name
             dataType
             displayName

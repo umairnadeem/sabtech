@@ -1,9 +1,11 @@
 import { LineItem } from "../models/LineItem";
 import { Order } from "../models/Order";
-import { keyBy } from "lodash";
+import { keyBy, mapValues } from "lodash";
 import { sumObjectsByKey } from "./mathUtils";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { format } from "date-fns";
+import { StoreStatusMajor } from "@shopify/polaris-icons";
 
 dayjs.extend(utc);
 
@@ -29,8 +31,8 @@ export interface TimeRange {
   to: Date;
 }
 
-const startOfMonth = (date: string | Date): string =>
-  dayjs(date).local().startOf("month").format();
+const monthYear = (date: string | Date): string =>
+  dayjs(date).local().startOf("month").format("MMM YYYY");
 
 const subMonths = (date: string | Date, n: number): Date =>
   dayjs(date).local().subtract(n, "months").toDate();
@@ -81,30 +83,41 @@ export const sumOrderFinancials = (
   }));
 };
 
-export const groupOrderFinancials = (
-  orderFinancials: OrderFinancials[],
-  interval: TimeInterval,
-  range: TimeRange
-): Record<string, OrderFinancials> => {
-  const output: Record<string, OrderFinancials> = {};
-  console.log(orderFinancials);
-  if (interval == TimeInterval.MONTH) {
-    let date = range.to;
-    while (isAfter(date, range.from)) {
-      output[startOfMonth(date)] = {
-        grossRevenue: 0,
-        shippingRevenue: 0,
-        discounts: 0,
-        returns: 0,
-        cogs: 0,
-      };
-      date = subMonths(date, 1);
-    }
-    orderFinancials.forEach((financial) => {
-      const financialDate = startOfMonth(financial.createdAt);
-      output[financialDate] = sumObjectsByKey(output[financialDate], financial);
-    });
-    return output;
+export function mapProfitLossStatement(
+  data: any,
+  from: Date,
+  to: Date
+): Record<string, OrderFinancials> {
+  const output = {};
+  let date = to;
+  while (isAfter(date, from)) {
+    output[monthYear(date)] = {
+      grossRevenue: 0,
+      shippingRevenue: 0,
+      discounts: 0,
+      returns: 0,
+      cogs: 0,
+    };
+    date = subMonths(date, 1);
   }
-  throw new Error(`Invalid time interval specified: ${interval}`);
-};
+  data.shopifyqlQuery.tableData.rowData.forEach((row) => {
+    output[row[0]] = {
+      grossRevenue: row[1].substring(1),
+      shippingRevenue: row[2].substring(1),
+      discounts: row[3].substring(1),
+      returns: row[4].substring(1),
+      cogs: row[5].substring(1),
+    };
+  });
+  return output;
+}
+
+export function sumProfitLossStatement(
+  mappedData: Record<string, OrderFinancials>
+): OrderFinancials {
+  const mappedObj = Object.values(mappedData).map((obj) =>
+    mapValues(obj, Number)
+  );
+  console.log(mappedObj);
+  return sumObjectsByKey(...mappedObj);
+}
